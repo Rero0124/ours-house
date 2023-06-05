@@ -1,14 +1,4 @@
-import Header from "./header"
-import Nav from "./nav"
-
-export default function Home() {
-	return (
-		<main className="">
-			<Header />
-			<div className="">
-				
-			</div>
-			<Nav />
-		</main>
-	)
+import { redirect } from 'next/navigation';
+export default async function Home() {
+    redirect('/home');
 }

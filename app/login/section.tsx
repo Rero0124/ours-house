@@ -8,16 +8,13 @@ interface loginForm extends HTMLFormControlsCollection  {
 }
 
 export default function Section() {
-    const userCheck = (e: FormEvent<HTMLFormElement>) => {
+    const userCheck = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const elements = e.currentTarget.elements as loginForm
-        const formData = new FormData();
-        formData.append('id', elements.id.value);
-        formData.append('pw', elements.pw.value);
-        const data = fetch('/api/login', {
+        const data = await fetch('/api/login', {
             method: 'post',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: formData,
+            headers: {'Content-Type': 'application/json', Accept: 'application/json'},
+            body: JSON.stringify({id: elements.id.value, pw: elements.pw.value}),
         }).then(res => res.json()).catch(err => err.message);
         console.log(data)
     }

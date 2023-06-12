@@ -12,6 +12,8 @@
     "@types/node": "^16.18.34",
     "@types/react": "^18.2.9",
     "@types/react-dom": "^18.2.4",
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
@@ -19,18 +21,19 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.12.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^4.0.3",
     "styled-components": "^6.0.0-rc.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5",
+    "util": "^0.12.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "prisma migrate dev && react-scripts start",
+    "start": "prisma migrate dev && react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "ts-node server/index.ts"
+    "server": "nodemon --watch 'server/**/*.ts' --exec ts-node server/index.ts"
   },
   "eslintConfig": {
     "extends": [
@@ -52,6 +55,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/bcryptjs": "^2.4.2",
     "prisma": "^4.15.0"
   }
 }

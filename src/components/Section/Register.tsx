@@ -1,5 +1,5 @@
 import { FormEvent } from "react";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 interface loginForm extends HTMLFormControlsCollection  {
     id: HTMLInputElement;

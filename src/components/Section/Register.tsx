@@ -11,16 +11,8 @@ interface apiData {
     message: string;
 }
 
-const LoginContainer = styled.div`
-    
-`;
-
-const LoginResult = styled.div`
-    
-`;
-
 export default function Register() {
-    const loginResult = document.getElementById('login-result');
+    
 
     const register = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -33,22 +25,17 @@ export default function Register() {
             headers: {'Content-Type': 'application/json', Accept: 'application/json'},
             body: JSON.stringify({id: id, pw: pw}),
         }).then(res => res.json()).catch(err => err.message);
-        if(loginResult) {
-            if(loginResult) {
-                if(data.message === 'login fail') loginResult.innerText = '다시 로그인 해주세요';
-                if(data.message === 'login success') window.location.replace('/home')
-            }
-        }
+        
     }
 
     return (
-        <LoginContainer id="loginContainer">
+        <div>
             <form onSubmit={register} >
                 <input name="id" />
                 <input name="pw" />
                 <input type="submit" value="회원가입"/>
             </form>
-            <LoginResult id="login-result"></LoginResult>
-        </LoginContainer>
+            
+        </div>
     )
 }

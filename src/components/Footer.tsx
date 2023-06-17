@@ -89,23 +89,23 @@ export default function Footer() {
                         <DivisionLabel>오시는 길</DivisionLabel>
                     </Link>
                     <InfoText>
-                        <ComeTextLabel>주소</ComeTextLabel>서울시 금천구가산디지털 1로 168
-                        B동 412호(가산동, 우림라이온스벨리)
+                        <ComeTextLabel>주소</ComeTextLabel>
+                        서울특별시 관악구 신림동 1409-22번지, 701호
                     </InfoText>
                     <Flexbox>
                         <InfoText>
-                            <ComeTextLabel>TEL </ComeTextLabel> 02-861-0216
+                            <ComeTextLabel>TEL </ComeTextLabel> 02-123-4567
                         </InfoText>
                         <Divider />
                         <InfoText>
-                            <ComeTextLabel>FAX</ComeTextLabel> 0504-844-0215
+                            <ComeTextLabel>FAX</ComeTextLabel> 0504-123-4567
                         </InfoText>
                         <Divider />
                         <InfoText>
-                            <ComeTextLabel>E-mail</ComeTextLabel> huen@huensystem.com
+                            <ComeTextLabel>E-mail</ComeTextLabel> rero0124@icloud.com
                         </InfoText>
                     </Flexbox>
-                <InfoText>Copyrightⓒ huensystem Right Reserved.</InfoText>
+                <InfoText>Copyrightⓒ oursHouse Right Reserved.</InfoText>
                 </FooterCome>
             </Wrapper>
         </FooterContainer>

@@ -5,7 +5,8 @@ import bcrypt from 'bcryptjs';
 type User = {
     userId: string;
     userName: string;
-}
+	salt: string;
+};
 
 declare module "express-session" {
     interface SessionData {
@@ -42,37 +43,37 @@ app.get('/', (req: Request, res: Response) => {
 	res.send('Typescript + Node.js + Express Server');
 });
 
-app.post('/api/login', async (req: Request, res: Response) => {
-	try {
-        const body = req.body;
-        if(body !== undefined) {
-            const prisma = new PrismaClient();
-            const user = await prisma.user.findFirst({
-                where: {
-                    id: body.id,
-                }
-            });
-            if(user?.pw !== undefined && await bcrypt.compare(body.pw, user.pw)) {
-                const id = user?.id || '';
-                const name = user?.name || id;
-                if(req.session.user !== undefined) {
-                    req.session.user.userId = id;
-                    req.session.user.userName = name;
-                } else {
-                    req.session.user = {
-                        userId: id,
-                        userName: name,
-                    };
-                } 
-                return res.status(200).json({ mssage: 'login success' });
-            } else {
-                return res.status(200).json({ mssage: 'login fail' });
-            }
-        } else {
-            return res.status(400).json({ message: 'verification failed' })
-        }
+app.post("/api/login", async (req: Request, res: Response) => {
+    try {
+		const body = req.body;
+		if (body !== undefined) {
+			const prisma = new PrismaClient();
+			const user = await prisma.tb_user.findFirst({
+				where: {
+					id: body.id,
+				},
+			});
+			if (user?.pw !== undefined && (await bcrypt.compare(body.pw, user.pw))) {
+				const id = user?.id || "";
+				const name = user?.name || id;
+				const salt = user?.salt || "";
+		
+				// 세션에 사용자 정보 저장
+				req.session.user = {
+					userId: id,
+					userName: name,
+					salt: salt,
+				};
+	
+				return res.status(200).json({ message: "login success" });
+			} else {
+				return res.status(200).json({ message: "login fail" });
+			}
+		} else {
+			return res.status(400).json({ message: "verification failed" });
+		}
     } catch (err) {
-        return res.status(500).json({ message: 'Internal server error' })
+      	return res.status(500).json({ message: "Internal server error" });
     }
 });
 
@@ -82,6 +83,7 @@ app.post('/api/logout', async (req: Request, res: Response) => {
             if(req.session.user.userId !== undefined) {
                 req.session.user.userId = '';
                 req.session.user.userName = '';
+                req.session.user.salt = '';
 
                 return res.status(200).json({ mssage: 'logout success' });
             } else {
@@ -96,35 +98,44 @@ app.post('/api/logout', async (req: Request, res: Response) => {
 });
 
 app.post('/api/register', async (req: Request, res: Response) => {
-	try {
+    try {
         const body = req.body;
-        if(body != null) {
+        if (body !== undefined) {
             const prisma = new PrismaClient();
-            const user = await prisma.user.findFirst({
+            const user = await prisma.tb_user.findFirst({
                 where: {
                     id: body.id,
-                }
+                },
             });
-            if(user == null) {
-                const newUser = await prisma.user.create({
-                    data: {
-                        id: body.id,
-                        pw: body.pw,
-                    }
-                });
-                if(newUser != null) {
-                    return res.status(200).json({ mssage: 'register success' });
-                } else {
-                    return res.status(200).json({ mssage: 'register fail' });
-                }
+            if (user) {
+                return res.status(200).json({ message: 'already id' });
             } else {
-                return res.status(200).json({ mssage: 'already id' });
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(body.pw, salt);
+                const newUser = await prisma.tb_user.create({
+                    data: {
+                        id: body.userId,
+                        pw: hashedPassword,
+						salt: body.salt,
+                    },
+                });
+                if (newUser) {
+                    // 세션에 사용자 정보 저장
+                    req.session.user = {
+                        userId: newUser.id,
+                        userName: newUser.name || '',
+                        salt: newUser.salt || '',
+                    };
+                    return res.status(200).json({ message: 'register success' });
+                } else {
+                    return res.status(200).json({ message: 'register fail' });
+                }
             }
         } else {
-            return res.status(400).json({ message: 'verification failed' })
+            return res.status(400).json({ message: 'verification failed' });
         }
     } catch (err) {
-        return res.status(500).json({ message: 'Internal server error' })
+        return res.status(500).json({ message: 'Internal server error' });
     }
 });
 

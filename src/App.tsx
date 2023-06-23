@@ -10,8 +10,8 @@ import Contact from './components/Section/Contact';
 function App() {
 	return (
 		<div className="App">
-			<Header />
-				<BrowserRouter>
+			<BrowserRouter>
+				<Header />
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="/home" element={<Home />} />

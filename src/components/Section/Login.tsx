@@ -76,6 +76,7 @@ export default function Login() {
 
             if (response.ok) {
                 const data = await response.json();
+                console.log(data)
                 if (data.message === 'login success') {
                     // 로그인 성공 후 필요한 동작 수행
                     navigate('/'); // 로그인 후 메인 페이지로 이동

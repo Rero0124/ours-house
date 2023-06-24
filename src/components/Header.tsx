@@ -56,29 +56,28 @@ export default function Header() {
 
     useEffect(() => {
         fetchUserData();
-    }, [window.location.href]);
+    });
 
     const fetchUserData = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/user', {
-                method: 'GET',
-                credentials: 'include'
+            const response = await fetch("http://localhost:5000/api/user", {
+                method: "GET",
+                credentials: "include",
             });
-
+            console.log(await response.json())
             if (response.ok) {
                 const data = await response.json();
-                setUser(data);
+                setUser(data.user);
             } else {
                 setUser(null);
             }
         } catch (error) {
-            console.log('세션 정보를 가져오는 중 에러:', error);
+            console.log("세션 정보를 가져오는 중 에러:", error);
             setUser(null);
         }
   };
 
 	return (
-        
         <Wrapper >
             <Logo to="/">
                 <img src="/icon.png" alt="logo" height="48" />

@@ -1,12 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-
-type User = {
-    userId: string;
-    userName: string;
-	salt: string;
-};
+import { User } from '../src/types'
 
 declare module "express-session" {
     interface SessionData {
@@ -20,7 +15,8 @@ const session = require('express-session');
 const cors = require('cors');
 
 app.use(cors({
-    origin: true,
+    origin: 'http://localhost:3000',
+    credentials: true,
     saveUninitialized: true,
 }));
 app.use(express.json());
@@ -48,21 +44,20 @@ app.post("/api/login", async (req: Request, res: Response) => {
 		const body = req.body;
 		if (body !== undefined) {
 			const prisma = new PrismaClient();
-			const user = await prisma.tb_user.findFirst({
+			const user = await prisma.user.findFirst({
 				where: {
 					id: body.id,
 				},
 			});
+
 			if (user?.pw !== undefined && (await bcrypt.compare(body.pw, user.pw))) {
 				const id = user?.id || "";
 				const name = user?.name || id;
-				const salt = user?.salt || "";
 		
 				// 세션에 사용자 정보 저장
 				req.session.user = {
-					userId: id,
-					userName: name,
-					salt: salt,
+					id: id,
+					name: name
 				};
 	
 				return res.status(200).json({ message: "login success" });
@@ -79,11 +74,11 @@ app.post("/api/login", async (req: Request, res: Response) => {
 
 app.post('/api/logout', async (req: Request, res: Response) => {
 	try {
+        console.log(req);
         if(req.session.user !== undefined) {
-            if(req.session.user.userId !== undefined) {
-                req.session.user.userId = '';
-                req.session.user.userName = '';
-                req.session.user.salt = '';
+            if(req.session.user.id !== undefined) {
+                req.session.user.id = '';
+                req.session.user.name = '';
 
                 return res.status(200).json({ mssage: 'logout success' });
             } else {
@@ -102,7 +97,7 @@ app.post('/api/register', async (req: Request, res: Response) => {
         const body = req.body;
         if (body !== undefined) {
             const prisma = new PrismaClient();
-            const user = await prisma.tb_user.findFirst({
+            const user = await prisma.user.findFirst({
                 where: {
                     id: body.id,
                 },
@@ -110,21 +105,17 @@ app.post('/api/register', async (req: Request, res: Response) => {
             if (user) {
                 return res.status(200).json({ message: 'already id' });
             } else {
-                const salt = await bcrypt.genSalt(10);
-                const hashedPassword = await bcrypt.hash(body.pw, salt);
-                const newUser = await prisma.tb_user.create({
+                const newUser = await prisma.user.create({
                     data: {
-                        id: body.userId,
-                        pw: hashedPassword,
-						salt: body.salt,
+                        id: body.id,
+                        pw: body.pw,
                     },
                 });
                 if (newUser) {
                     // 세션에 사용자 정보 저장
                     req.session.user = {
-                        userId: newUser.id,
-                        userName: newUser.name || '',
-                        salt: newUser.salt || '',
+                        id: newUser.id,
+                        name: newUser.name || '',
                     };
                     return res.status(200).json({ message: 'register success' });
                 } else {
@@ -136,6 +127,19 @@ app.post('/api/register', async (req: Request, res: Response) => {
         }
     } catch (err) {
         return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+app.get("/api/user", (req: Request, res: Response) => {
+    try {
+        const user = req.session.user;
+        if (user) {
+            return res.status(200).json({ user });
+        } else {
+            return res.status(401).json({ message: "User not logged in" });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: "Internal server error" });
     }
 });
 

@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { User } from '../types';
 
 const Wrapper = styled.div`
     max-width: 1024px;
@@ -50,6 +52,31 @@ const SearchInput = styled.input`
     
 `
 export default function Header() {
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        fetchUserData();
+    }, [window.location.href]);
+
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/user', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setUser(data);
+            } else {
+                setUser(null);
+            }
+        } catch (error) {
+            console.log('세션 정보를 가져오는 중 에러:', error);
+            setUser(null);
+        }
+  };
+
 	return (
         
         <Wrapper >
@@ -58,18 +85,26 @@ export default function Header() {
                 <p >우리의 집</p>
             </Logo>
             <Navigation>
-                <a href="/post">게시글</a>
-                <a href="/question">질문글</a>
-                <a href="/my">내정보</a>
+                <Link to="/post">게시글</Link>
+                <Link to="/question">질문글</Link>
+                <Link to="/my">내정보</Link>
             </Navigation>
             <SearchBox>
                 <SearchInput type="text"/>
                 <img src="/search.svg" alt="logo" height="24" placeholder="검색"/>
             </SearchBox>
             <Navigation >
-                <a href="/login">로그인</a>
-                <a href="/logout">로그아웃</a>
-                <a href="/register">회원가입</a>
+                {user ? (
+                    <>
+                        <span>{user.id}</span>
+                        <Link to="/logout">로그아웃</Link>
+                    </>
+                    ) : (
+                    <>
+                        <Link to="/login">로그인</Link>
+                        <Link to="/register">회원가입</Link>
+                    </>
+                )}
             </Navigation>
         </Wrapper>
 

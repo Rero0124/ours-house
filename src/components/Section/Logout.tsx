@@ -9,7 +9,7 @@ export default function Logout() {
             try {
                 await fetch('http://localhost:5000/api/logout', {
                     method: 'POST',
-                    credentials: 'include',
+                    credentials: 'include'
                 });
 
                 // 세션 데이터를 지우거나 필요한 정리 작업을 수행합니다.

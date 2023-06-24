@@ -75,12 +75,12 @@ export default function Register() {
 
             const data = await response.json();
             const message = data.message;
-      
-            console.log(message)
 
             if (message === "register success") {
                 setRegisterResult("회원가입 성공");
                 navigate("/");
+            } else if (message === "already id") {
+                setRegisterResult("이미 있는 아이디 입니다");
             } else {
                 setRegisterResult("회원가입 실패");
             }
